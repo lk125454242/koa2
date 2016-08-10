@@ -8,12 +8,17 @@ const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser')();
 const logger = require('koa-logger');
+const session = require('koa-session');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
 
+//加载数据库
+require('./config/server');
+
 // middlewares
 app.use(convert(bodyparser));
+app.use(convert(session(app)));
 app.use(convert(json()));
 app.use(convert(logger()));
 app.use(require('koa-static')(__dirname + '/public'));
