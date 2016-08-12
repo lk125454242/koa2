@@ -35,7 +35,15 @@ app.use(async (ctx, next) => {
   const ms = new Date() - start;
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
-
+app.use(function (ctx,next) {
+  var res = ctx.response;
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Headers", "content-type");
+  res.set("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+  res.set("X-Powered-By",' 3.2.1');
+  res.set("Content-Type", "application/json;charset=utf-8");
+  next();
+});
 router.use('/', index.routes(), index.allowedMethods());
 router.use('/users', users.routes(), users.allowedMethods());
 
@@ -43,7 +51,7 @@ app.use(router.routes(), router.allowedMethods());
 // response
 
 app.on('error', function(err, ctx){
-  console.log(err)
+  console.log(err);
   logger.error('server error', err, ctx);
 });
 

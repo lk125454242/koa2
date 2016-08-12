@@ -92,7 +92,7 @@
     var ul = $('#ul');
     $('#get').click(function () {
         $.ajax({
-            url:url + '/lyk/getUser',
+            url:url + '/users/get_users',
             dataType:'json',
             success:function (json) {
                 var html = '';

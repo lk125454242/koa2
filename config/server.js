@@ -13,4 +13,5 @@ db.on('error',console.error.bind(console,'连接错误:'));
 db.once('open',console.log.bind(console,'连接成功'));
 
 /* redis */
-//var Redis = new ioredis(config.redis);
+var Redis = new ioredis(config.redis);
+exports.Redis = Redis;

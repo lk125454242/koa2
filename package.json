@@ -15,6 +15,7 @@
     "handlebars": "~4.0.5",
     "ioredis": "^2.2.0",
     "koa": "^2.0.0",
+    "koa-basic-auth": "^1.1.2",
     "koa-bodyparser": "^2.0.1",
     "koa-convert": "^1.2.0",
     "koa-json": "^1.1.1",

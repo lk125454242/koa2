@@ -48,9 +48,8 @@ var user = {
         default:0
     }
 };
-var userSchema = new Schema(user);
-
-userSchema.findAll = function (callback) {
+var User = Schema(user);
+User.methods.findAll = function (callback) {
     users.find({}, function(err, doc){
         if (err) {
             return callback(err, null);
@@ -58,7 +57,7 @@ userSchema.findAll = function (callback) {
         return callback(err, _.filter(doc,'nickname','_id'));
     });
 };
-userSchema.methods.dataInfo = function (filter) {
+User.methods.dataInfo = function (filter) {
     users.find(filter, function(err, doc){
         if (err) {
             return callback(err, null);//TODO
@@ -71,4 +70,4 @@ userSchema.methods.dataInfo = function (filter) {
         }
     });
 };
-exports.userSchema = mongoose.model('Users',user);
+exports.User = mongoose.model('Users',User);
