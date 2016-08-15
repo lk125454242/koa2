@@ -25,19 +25,18 @@ router.post('/register', async (ctx, next) => {
             code: 200,
             msg: errMessage
         };
-        console.log(ctx);
     });
 
     console.log('return');
 });
 router.get('/get_users', async (ctx, next) => {
-    var data;
-    data = users_mongoose.get_users();
-    ctx.body = {
-        code: 200,
-        data: data,
-        msg: '成功'
-    }
+    await users_mongoose.get_users().then(function (data) {
+        ctx.body = {
+            code: 200,
+            data: data,
+            msg: '成功'
+        }
+    });
 });
 
 module.exports = router;
