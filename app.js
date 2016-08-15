@@ -30,7 +30,16 @@ app.use(views(__dirname + '/views', {
 // logger
 app.use(async (ctx, next) => {
   const start = new Date();
-  await next();
+  try {
+    await next();
+    /*
+    * TODO 防止  reject 调用全局error 导致500
+    * TODO 以后肯定不应该这么处理
+    * TODO 导致 服务器对于接口错误的混淆
+    * */
+  }catch (e){
+    console.log(e);
+  }
   const ms = new Date() - start;
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });

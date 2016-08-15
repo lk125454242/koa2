@@ -6,8 +6,10 @@ router.post('/register', async (ctx, next) => {
     username = param.username;
     password1 = param.password[0];
     password2 = param.password[1];
-    await users_mongoose.find_user(username).then(function (data) {
-        return Promise.reject('已经被注册，请修改账户名');
+    var a = await users_mongoose.find_user(username).then(function (data) {
+        if(data.length){
+            return Promise.reject('已经被注册，请修改账户名');
+        }
     }).then(function () {
         if(password1 !== password2){
             return Promise.reject('两次密码不一致');
@@ -26,7 +28,7 @@ router.post('/register', async (ctx, next) => {
             msg: errMessage
         };
     });
-
+    console.log(a);
     console.log('return');
 });
 router.get('/get_users', async (ctx, next) => {
