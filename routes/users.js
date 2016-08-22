@@ -1,12 +1,16 @@
 var router = require('koa-router')();
 var users_mongoose = require('../vilidate/users_mongoose');
+/* 登录 */
+router.post('/login', async (ctx, next) => {
+    
+});
 /* 注册账户 */
 router.post('/register', async (ctx, next) => {
     var username,password1,password2,data,param = ctx.request.body;
     username = param.username;
     password1 = param.password[0];
     password2 = param.password[1];
-    var a = await users_mongoose.find_user(username).then(function (data) {
+    await users_mongoose.find_user(username).then(function (data) {
         if(data.length){
             return Promise.reject('已经被注册，请修改账户名');
         }
@@ -27,9 +31,8 @@ router.post('/register', async (ctx, next) => {
             code: 200,
             msg: errMessage
         };
+        next();
     });
-    console.log(a);
-    console.log('return');
 });
 router.get('/get_users', async (ctx, next) => {
     await users_mongoose.get_users().then(function (data) {
