@@ -10,7 +10,6 @@ let result = {
         }
     }
 }
-console.log(_.trim(process.env.NODE_ENV));
 switch (_.trim(process.env.NODE_ENV)) {
     case 'development':
         result.server = require('./server.dev.js');
