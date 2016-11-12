@@ -8,17 +8,34 @@ const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser')();
 const logger = require('koa-logger');
-const session = require('koa-session');
+const mongoose = require('mongoose');
+const ioredis = require('ioredis');
+const mysql = require('mysql');
 
-const index = require('./routes/index');
-const users = require('./routes/users');
+var mount = require('mount-koa-routes');
 
-//加载数据库
-require('./config/server');
+const config = require('./config');
+const mongo_config = config.server.mongo;
+const redis_config = config.server.redis;
+const mysql_config = config.server.mysql;
+mongoose.connect(
+    mongo_config.connection_string
+)
+db = mongoose.connection;
+db.once('open', console.log.bind(null, 'mongoD已连接...'));
+const mysql_connection = mysql.createConnection(mysql_config);
+mysql_connection.connect((err)=>{
+  if (err) {
+    console.error('mysql 连接错误: ' + err.stack);
+    return;
+  }
+  console.log('mysql 连接id: ' + mysql_connection.threadId);
+});
+const redis_connection = new ioredis(redis_config.connection_string);
+console.log('redis 已连接...');
 
 // middlewares
 app.use(convert(bodyparser));
-app.use(convert(session(app)));
 app.use(convert(json()));
 app.use(convert(logger()));
 app.use(require('koa-static')(__dirname + '/public'));
@@ -27,30 +44,27 @@ app.use(views(__dirname + '/views', {
   extension: 'hbs',
   map: { hbs: 'handlebars' }
 }));
+
 // logger
 app.use(async (ctx, next) => {
   const start = new Date();
-  try {
-    await next();
-    /*
-    * TODO 防止  reject 调用全局error 导致500
-    * TODO 以后肯定不应该这么处理
-    * TODO 导致 服务器对于接口错误的混淆
-    * */
-  }catch (e){
-    console.log(e);
-  }
+  await next();
   const ms = new Date() - start;
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
-router.use('/', index.routes(), index.allowedMethods());
-router.use('/users', users.routes(), users.allowedMethods());
+
+mount(app, process.cwd() + '/routes');
+
+// const index = require('./routes/index');
+// const users = require('./routes/users');
+// router.use('/', index.routes(), index.allowedMethods());
+// router.use('/users', users.routes(), users.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response
 
 app.on('error', function(err, ctx){
-  console.log(err);
+  console.log(err)
   logger.error('server error', err, ctx);
 });
 
