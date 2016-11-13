@@ -1,4 +1,5 @@
-let  _ =  require('lodash');
+let _ = require('lodash');
+let service = require(process.cwd() + '/bin/service').init;
 let result = {
     tentcent: {
         COS: {//对象存储 CDN
@@ -6,16 +7,16 @@ let result = {
             SecretId: 'AKIDkAqRt9hrwJYeq5z8wYyFMH0fEbLygr2Q',
             SecretKey: 'QfhhZXMKCViw40jFanpgPw9FBzeJqBJG',
             Bucket: 'static',
-            Host: 'https//bj.api.qcloud.com/'
+            Host: 'https://sh.file.myqcloud.com/files/v2/'
         }
     }
 }
 switch (_.trim(process.env.NODE_ENV)) {
-    case 'development':
-        result.server = require('./server.dev.js');
-        break;
     case 'production':
-        result.server = require('./server.pro.js');
+        service(require('./server.pro.js'));
         break;
+    default:
+        process.env.NODE_ENV = 'development';
+        service(require('./server.dev.js'));
 }
 module.exports = result; 

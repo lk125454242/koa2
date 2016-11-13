@@ -8,58 +8,10 @@ const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser')();
 const logger = require('koa-logger');
-const mongoose = require('mongoose');
-const ioredis = require('ioredis');
-const mysql = require('mysql');
-const exec = require('child_process').exec;
 
 var mount = require('mount-koa-routes');
 
 const config = require('./config');
-const mongo_config = config.server.mongo;
-const redis_config = config.server.redis;
-const mysql_config = config.server.mysql;
-const mongo_database = () => {
-  mongoose.connect(
-    mongo_config.connection_string
-  )
-  let db = mongoose.connection;
-  db.once('open', console.log.bind(null, 'mongoD已连接...'));
-  db.on('error', function (err) {
-    exec('/usr/bin/mongod --dbpath /data/mongo/db --logpath /data/mongo/log/mongodb.log --logappend &', function (err) {
-      if (err) {
-        console.log('mongo...连接失败');
-      } else {
-        mongo_database();
-      }
-    })
-  });
-}
-
-const mysql_database = () => {
-  let mysql_connection = mysql.createConnection(mysql_config);
-  mysql_connection.connect((err) => {
-    if (err) {
-      console.error('mysql 连接错误: ' + err.stack);
-      return;
-    }
-    console.log('mysql 连接id: ' + mysql_connection.threadId);
-  });
-}
-const redis_database = () => {
-  let redis_connection = new ioredis(redis_config.connection_string);
-  redis_connection.set('foo', 'bar');
-  redis_connection.get('foo').then((result) => {
-    if (result === 'bar') {
-      console.log('redis 已连接...');
-    } else {
-      console.log('redis', redis_connection.get('foo'))
-    }
-  })
-}
-mongo_database();
-mysql_database();
-redis_database();
 
 // middlewares
 app.use(convert(bodyparser));
@@ -79,8 +31,7 @@ app.use(async (ctx, next) => {
   const ms = new Date() - start;
   console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
-
-mount(app, process.cwd() + '/routes');
+mount(app, process.cwd() + '/routes');//加载路由
 
 // const index = require('./routes/index');
 // const users = require('./routes/users');
