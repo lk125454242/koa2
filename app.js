@@ -1,49 +1,62 @@
+//################## 依赖库
 const Koa = require('koa');
 const app = new Koa();
 const router = require('koa-router')();
-const views = require('koa-views');
+//const views = require('koa-views');
+//const compose = require('koa-compose');//加载多个中间件
 const co = require('co');
 const convert = require('koa-convert');
 const json = require('koa-json');
 const onerror = require('koa-onerror');
 const bodyparser = require('koa-bodyparser')();
 const logger = require('koa-logger');
-
-var mount = require('mount-koa-routes');
-
+const koa_static = require('koa-static');
+const mount = require('mount-koa-routes');
+//################## 启动数据库 依赖文件
 const config = require('./config');
-
-// middlewares
+//################## 其他变量
+//var cwd = process.cwd();
+//################## middlewares
 app.use(convert(bodyparser));
 app.use(convert(json()));
 app.use(convert(logger()));
-app.use(require('koa-static')(__dirname + '/public'));
-
-app.use(views(__dirname + '/views', {
-  extension: 'hbs',
-  map: { hbs: 'handlebars' }
-}));
-
-// logger
-app.use(async (ctx, next) => {
-  const start = new Date();
-  await next();
-  const ms = new Date() - start;
-  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
+app.use(koa_static(__dirname + '/public'));
+// app.use(views(__dirname + '/views', {
+//     extension: 'hbs',
+//     map: { hbs: 'handlebars' },
+//     options: {
+//         helpers: {},
+//         partials: {
+//             layout: './layout'
+//         }
+//     }
+// }));
+require('./middleware/tencent');
+//##################  error handler && logger time
+app.use(async (ctx, next) => {//
+    const start = new Date();
+    try {
+        await next();
+    } catch (err) {
+        // will only respond with JSON
+        ctx.status = err.statusCode || err.status || 500;
+        ctx.body = {
+            code: 500,
+            message: err.message
+        };
+    }
+    const ms = new Date() - start;
+    console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
 });
-mount(app, process.cwd() + '/routes');//加载路由
 
-// const index = require('./routes/index');
-// const users = require('./routes/users');
-// router.use('/', index.routes(), index.allowedMethods());
-// router.use('/users', users.routes(), users.allowedMethods());
-
+//##################  路由
+mount(app, process.cwd() + '/routes');
 app.use(router.routes(), router.allowedMethods());
-// response
 
-app.on('error', function (err, ctx) {
-  console.log(err)
-  logger.error('server error', err, ctx);
+//##################  错误处理
+app.on('error', function(err, ctx) {
+    console.log(err)
+    logger.error('server error', err, ctx);
 });
 
 
