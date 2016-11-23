@@ -2,6 +2,7 @@
 const Koa = require('koa');
 const app = new Koa();
 const router = require('koa-router')();
+const hbs = require('koa-hbs');
 //const views = require('koa-views');
 //const compose = require('koa-compose');//加载多个中间件
 const co = require('co');
@@ -21,16 +22,18 @@ app.use(convert(bodyparser));
 app.use(convert(json()));
 app.use(convert(logger()));
 app.use(koa_static(__dirname + '/public'));
-// app.use(views(__dirname + '/views', {
-//     extension: 'hbs',
-//     map: { hbs: 'handlebars' },
-//     options: {
-//         helpers: {},
-//         partials: {
-//             layout: './layout'
-//         }
-//     }
-// }));
+app.use(convert(hbs.middleware({
+    viewPath: __dirname + '/views',
+    defaultLayout: 'layout',
+    layoutsPath: __dirname + '/views'
+})));
+app.use(async (ctx, next) => {
+  const render = ctx.render;
+  ctx.render = async function _convertedRender () {
+    return co.call(ctx, render.apply(ctx, arguments))
+  }
+  await next();
+});
 require('./middleware/tencent');
 //##################  error handler && logger time
 app.use(async (ctx, next) => {//

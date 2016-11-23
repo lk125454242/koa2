@@ -27,9 +27,9 @@ router.post('/', async function (ctx, next) {
                 }
             });
     }).then(function () {
-        response.success(that, {})
+        return response.success(that, {})
     }, function (err) {
-        response.sqlError(that, err);
+        return response.sqlError(that, err);
     })
 });
 module.exports = router;
