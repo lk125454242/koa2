@@ -10,17 +10,17 @@ const redis = require(cwd + '/bin/service').init().redis;
 const utils = require(cwd + '/middleware/utils');
 const wx_config = require(cwd + '/config').wx_public;
 
-var weChat = {
+let weChat = {
     token: async function () {
         try {
-            var result = await redis.get('access_token');
+            let result = await redis.get('access_token');
             if (result) {
                 return {
                     code: 200,
                     data: result
                 }
             }
-            var body = await rp({
+            let body = await rp({
                 url: 'https://api.weixin.qq.com/cgi-bin/token',
                 qs: {
                     grant_type: 'client_credential',
@@ -51,15 +51,15 @@ var weChat = {
     },
     ticket: async function () {
         try {
-            var result = await redis.get('ticket');
+            let result = await redis.get('ticket');
             if (result) {
                 return {
                     code: 200,
                     data: result
                 }
             }
-            var token = await this.token();
-            var body = await rp({
+            let token = await this.token();
+            let body = await rp({
                 url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket',
                 qs: {
                     access_token: token.data,
@@ -87,27 +87,27 @@ var weChat = {
     },
     signature: async function (url) {
         try {
-            // var result = await redis.get('signature');
+            // let result = await redis.get('signature');
             // if (result) {
             //     return {
             //         code: 200,
             //         data: JSON.parse(result)
             //     }
             // }
-            var jsapi_ticket = await this.ticket();
+            let jsapi_ticket = await this.ticket();
             if (!jsapi_ticket) {
                 return {
                     message: 'ticket 不存在'
                 }
             }
-            var noncestr = utils.random_string(16);
-            var timestamp = ((Date.now() / 1000) | 0).toString();
-            var signature_source = 'jsapi_ticket=' + jsapi_ticket +
+            let noncestr = utils.random_string(16);
+            let timestamp = ((Date.now() / 1000) | 0).toString();
+            let signature_source = 'jsapi_ticket=' + jsapi_ticket +
                 '&noncestr=' + noncestr +
                 '&timestamp=' + timestamp +
                 '&url=' + url;
-            var signature = crypto.createHash('sha1').update(signature_source, 'utf8').digest('hex');
-            result = {
+            let signature = crypto.createHash('sha1').update(signature_source, 'utf8').digest('hex');
+            let result = {
                 appId: wx_config.AppID,
                 timestamp: timestamp,
                 nonceStr: noncestr,
