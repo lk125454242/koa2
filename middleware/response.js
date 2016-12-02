@@ -3,7 +3,7 @@
  */
 var _ = require('lodash');
 exports.success = function (ctx, data) {
-    var response = {
+    let response = {
         code : data.code || 200,
         message : '成功'
     };
@@ -17,8 +17,8 @@ exports.success = function (ctx, data) {
     ctx.body = response;
 };
 exports.sqlError = function (ctx, err) {
-    var state = err.sqlState;
-    var response = {
+    let state = err.sqlState,
+        response = {
         code : 500,
         message : 'sql数据存储失败'
     };
@@ -31,3 +31,10 @@ exports.sqlError = function (ctx, err) {
     }
     ctx.body = response;
 };
+exports.error = function (ctx, err) {
+    let response = {
+        code: err.code || 500,
+        message: err.message || 'sql数据存储失败'
+    }
+    ctx.body = response;
+}

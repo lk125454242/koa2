@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const ioredis = require('ioredis');
 const mysql = require('mysql');
 const exec = require('child_process').exec;
+const Promise = require('bluebird');
+const redisStore = require('koa-redis');
 
 const mongo_database = (config) => {
     mongoose.connect(
@@ -30,7 +32,7 @@ const mysql_database = (config) => {
     return mysql_connection;
 }
 const redis_database = (config) => {
-    let redis_connection = new ioredis(config.connection_string);
+    let redis_connection = new ioredis(config);
     redis_connection.set('foo', 'bar');
     redis_connection.get('foo').then((result) => {
         if (result === 'bar') {
@@ -41,21 +43,29 @@ const redis_database = (config) => {
     })
     return redis_connection;
 }
+const redis_store = (config) => {
+    let redis_connection = redisStore(config);
+    redis_connection.client.on("error", function (err) {
+        console.log("redisStore 连接失败" + err);
+    });
+}
 
 module.exports = {
     init: (() => {
         let connect = {
             mongo: null,
             mysql: null,
-            redis: null
+            redis: null,
+            store: null
         }
         return (config) => {
             if (connect.mongo || connect.mysql || connect.redis) {
                 return connect;
             } else {
                 connect.mongo = mongo_database(config.mongo);
-                connect.mysql = mysql_database(config.mysql);
+                connect.mysql = Promise.promisifyAll(mysql_database(config.mysql));
                 connect.redis = redis_database(config.redis);
+                connect.store = redis_store(config.redis)
                 return connect;
             }
         }
