@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const ioredis = require('ioredis');
 const mysql = require('mysql');
+const Sequelize = require("sequelize");
+const my = require('sequelize');
 const exec = require('child_process').exec;
 const Promise = require('bluebird');
 const redisStore = require('koa-redis');
@@ -21,16 +23,9 @@ const mongo_database = (config) => {
 }
 
 const mysql_database = (config) => {
-    let mysql_connection = mysql.createConnection(config);
-    mysql_connection.connect((err) => {
-        if (err) {
-            console.error('mysql 连接错误: ' + err.stack);
-            return;
-        }
-        console.log('mysql 连接id: ' + mysql_connection.threadId);
-    });
-    return mysql_connection;
+    return new Sequelize(config.string);
 }
+
 const redis_database = (config) => {
     let redis_connection = new ioredis(config);
     redis_connection.set('foo', 'bar');

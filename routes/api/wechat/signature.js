@@ -9,14 +9,13 @@ const wx_public = require(process.cwd() + '/middleware/wx_public');
 
 
 router.get('/', async function (ctx, next) {
-    console.log(this.request.query);
-    var url = this.request.query.url;
+    var url = ctx.request.query.url;
     if (!url) {
-        this.body = {
+        ctx.body = {
             message: '参数错误'
         }
     }
-    this.body = await wx_public.signature(url);
+    ctx.body = await wx_public.signature(url);
 });
 module.exports = router;
 

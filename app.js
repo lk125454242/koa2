@@ -41,6 +41,12 @@ app.use(convert(hbs.middleware({
     defaultLayout: 'layout',
     layoutsPath: __dirname + '/views'
 })));
+/* ##################### 建表时启用 ##################### */
+// const models = require(cwd + '/models');
+// models.sequelize.sync().then(function () {
+//   console.log("mysql connection success");
+// });
+
 
 app.use(convert(session({
     key: 'koa:session',//session key

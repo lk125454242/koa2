@@ -8,7 +8,7 @@ const response = require(cwd + '/middleware/response');
 const wx_public = require(process.cwd() + '/middleware/wx_public');
 
 router.get('/',async function (ctx, next) {
-    this.body = await wx_public.token();
+    ctx.body = await wx_public.token();
 });
 
 module.exports = router;

@@ -17,14 +17,17 @@ exports.success = function (ctx, data) {
     ctx.body = response;
 };
 exports.sqlError = function (ctx, err) {
-    let state = err.sqlState,
+    let state = err.parent.sqlState,
         response = {
-        code : 500,
-        message : 'sql数据存储失败'
-    };
+            code : 500,
+            message : ''
+        };
+    err.errors.forEach(function(v, i){
+        response.message += v.message + ' : '
+    })
     switch (state){
         case '23000':
-            response.message = '违反唯一约束';
+            response.message += '已经存在';
             break;
         default:
             response.state = state;
