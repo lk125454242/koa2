@@ -9,20 +9,18 @@ const response = require(cwd + '/middleware/response');
 
 router.post('/', async function (ctx, next) {
     let body = ctx.request.body,
-        roles = body.roles || [],
+        routes = body.routes || [],
         remove = body.remove || [];
-    if (!roles && !remove) {
+    if (!routes && !remove) {
         response.error(ctx, { message: '参数错误' });
     }
-    await models.User_Role.destroy({
+    await models.Role_Route.destroy({
         where: {
             $or: remove
         },
         force: true//物理删除
     })
-    await models.User_Role.bulkCreate(roles, {
-        validate: true
-    }).then((result) => {
+    await models.Role_Route.bulkCreate(routes).then((result) => {
         response.success(ctx, result);
     }, (err) => {
         response.sqlError(ctx, err);

@@ -13,7 +13,7 @@ const wx_config = require(cwd + '/config').wx_public;
 let weChat = {
     token: async function () {
         try {
-            let result = await redis.get('access_token');
+            let result = await redis.get('wx_access_token');
             if (result) {
                 return {
                     code: 200,
@@ -30,7 +30,7 @@ let weChat = {
                 json: true,
             });
             if (body && body.access_token) {
-                redis.set('access_token', body.access_token, 'EX', body.expires_in - 100);
+                redis.set('wx_access_token', body.access_token, 'EX', body.expires_in - 100);
                 return {
                     code: 200,
                     data: body.access_token
@@ -51,7 +51,7 @@ let weChat = {
     },
     ticket: async function () {
         try {
-            let result = await redis.get('ticket');
+            let result = await redis.get('wx_ticket');
             if (result) {
                 return {
                     code: 200,
@@ -68,7 +68,7 @@ let weChat = {
                 json: true,
             });
             if (body && body.ticket) {
-                redis.set('ticket', body.ticket, 'EX', body.expires_in - 100);
+                redis.set('wx_ticket', body.ticket, 'EX', body.expires_in - 100);
                 return {
                     code: 200,
                     data: body.ticket

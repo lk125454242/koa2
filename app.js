@@ -20,11 +20,14 @@ const cwd = process.cwd();
 //################## 启动数据库 依赖文件
 const config = require('./config');
 const authority = require(cwd + '/middleware/authority');
+const crypto = require(cwd + '/middleware/crypto');
+const redis = require(cwd + '/bin/service').init().redis;
+const response = require(cwd + '/middleware/response');
 //################## middlewares
 app.keys = config.keys;
 app.use(convert(cors(
     {
-        allowMethods: 'http://localhost,http://localhost:3000',
+        //origin: 'http://localhost,http://localhost:3000', //默认*
         exposeHeaders: ['X-My-Custom-Header', 'X-Another-Custom-Header'],
         maxAge: '86400',
         credentials: 'true',
@@ -44,7 +47,7 @@ app.use(convert(hbs.middleware({
 /* ##################### 建表时启用 ##################### */
 // const models = require(cwd + '/models');
 // models.sequelize.sync().then(function () {
-//   console.log("mysql connection success");
+//     console.log("mysql connection success");
 // });
 
 
@@ -75,7 +78,25 @@ require('./middleware/tencent');
 app.use(async (ctx, next) => {//
     const start = new Date();
     try {
-        await next();
+        if (/^\/admin/.test(ctx.request.url)) {
+            let login = ctx.session.login;
+            let now = ctx.session.now;
+            console.log(login, now);
+            if (login) {
+                login = crypto.decipher('aes-128-cbc', login);
+                console.log(login, now);
+                if (login == now) {
+                    console.log()
+                    await next();
+                } else {
+                    response.error(ctx, { message: '登录失效' });
+                }
+            } else {
+                response.error(ctx, { message: '登录失效' });
+            }
+        } else {
+            await next();
+        }
     } catch (err) {
         // will only respond with JSON
         let err_arr = err.message.split('=>');

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "SET NODE_ENV=development && npm start",
-    "pro": "export NODE_ENV=production && npm start",
+    "pro": "export NODE_ENV=production && npm run pm2",
     "start": "./node_modules/.bin/nodemon --harmony bin/www",
     "koa": "./node_modules/.bin/runkoa bin/www",
     "pm2": "pm2 start bin/run ",

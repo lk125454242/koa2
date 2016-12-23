@@ -4,35 +4,25 @@
 var _ = require('lodash');
 exports.success = function (ctx, data) {
     let response = {
-        code : data.code || 200,
-        message : '成功'
+        code: data.code || 200,
+        message: '成功'
     };
-    if(_.isArray(data)){
+    if (_.isArray(data)) {
         response.data = {
-            list : data
+            list: data
         }
-    }else{
+    } else {
         response.data = data;
     }
     ctx.body = response;
 };
 exports.sqlError = function (ctx, err) {
-    let state = err.parent.sqlState,
-        response = {
-            code : 500,
-            message : ''
-        };
-    err.errors.forEach(function(v, i){
-        response.message += v.message + ' : '
-    })
-    switch (state){
-        case '23000':
-            response.message += '已经存在';
-            break;
-        default:
-            response.state = state;
-    }
-    ctx.body = response;
+    console.log(err);
+    ctx.body = response = {
+        code: 500,
+        message: err.message,
+        state: err.parent.sqlState
+    };
 };
 exports.error = function (ctx, err) {
     let response = {
