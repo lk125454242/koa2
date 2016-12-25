@@ -5,6 +5,7 @@ const _ = require('lodash');
 const cwd = process.cwd();
 const models = require(cwd + '/models');
 const response = require(cwd + '/middleware/response');
+const files_path = require(cwd + '/middleware/files_path').file;
 
 router.get('/', async function (ctx, next) {
     let body = ctx.request.query,
@@ -17,11 +18,15 @@ router.get('/', async function (ctx, next) {
             }
         }
     }
-    await models.Media.findAndCountAll({
+    await models.Media.findAll({
         where: where,
-        raw: true
+        raw: true,
+        order: 'created_at DESC'
     }).then((result) => {
-        response.success(ctx, result);
+        response.success(ctx, {
+            base: files_path,
+            list: result
+        });
     }, (err) => {
         response.sqlError(ctx, err);
     })

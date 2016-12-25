@@ -78,7 +78,9 @@ require('./middleware/tencent');
 app.use(async (ctx, next) => {//
     const start = new Date();
     try {
-        if (/^\/admin/.test(ctx.request.url)) {
+        await next();
+
+        /*if (/^\/admin/.test(ctx.request.url)) {
             let login = ctx.session.login;
             let now = ctx.session.now;
             console.log(login, now);
@@ -96,7 +98,7 @@ app.use(async (ctx, next) => {//
             }
         } else {
             await next();
-        }
+        }*/
     } catch (err) {
         // will only respond with JSON
         let err_arr = err.message.split('=>');

@@ -1,0 +1,1 @@
+exports.file = 'http://file.liyankai.com/';

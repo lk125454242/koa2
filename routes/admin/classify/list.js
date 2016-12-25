@@ -5,7 +5,8 @@ const _ = require('lodash');
 const cwd = process.cwd();
 const models = require(cwd + '/models');
 const response = require(cwd + '/middleware/response');
-
+const format = require(cwd + '/middleware/format');
+    
 router.get('/', async function (ctx, next) {
     let body = ctx.request.query,
         where,
@@ -21,6 +22,7 @@ router.get('/', async function (ctx, next) {
         where: where,
         raw: true
     }).then((result) => {
+        result = format.appendChild(result,'id','parent','level',1);
         response.success(ctx, result);
     }, (err) => {
         response.sqlError(ctx, err);

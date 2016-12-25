@@ -1,5 +1,6 @@
 const router = require('koa-router')();
 const compose = require('koa-compose');//加载多个中间件
+const _ = require('lodash');
 
 const cwd = process.cwd();
 const models = require(cwd + '/models');
@@ -12,19 +13,19 @@ router.post('/', async function (ctx, next) {
         parent = body.parent,
         level = body.level;
     if (!name || !parent || !level) {
-        return response.error(res, { message: '参数错误' });
+        return response.error(ctx, { message: '参数错误' });
     }
     await models.Classify.create({
         name: name,
         level: level,
         parent: parent,
-    },{
-        raw: true
-    }).then((result) => {
-        response.success(ctx, {});
-    }, (err) => {
-        response.sqlError(ctx, err);
-    })
+    }, {
+            raw: true
+        }).then((result) => {
+            response.success(ctx, result);
+        }, (err) => {
+            response.sqlError(ctx, err);
+        })
 
 })
 module.exports = router;
