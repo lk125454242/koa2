@@ -5,8 +5,8 @@ const _ = require('lodash');
 const cwd = process.cwd();
 const models = require(cwd + '/models');
 const response = require(cwd + '/middleware/response');
-const files_path = require(cwd + '/middleware/files_path').file;
-
+const format = require(cwd + '/middleware/format');
+    
 router.get('/', async function (ctx, next) {
     let body = ctx.request.query,
         where,
@@ -18,16 +18,11 @@ router.get('/', async function (ctx, next) {
             }
         }
     }
-    await models.Media.findAll({
+    await models.Classify.findAll({
         where: where,
-        raw: true,
-        order: 'created_at DESC',
-        include: [ models.Classify ]
+        raw: true
     }).then((result) => {
-        response.success(ctx, {
-            base: files_path,
-            list: result
-        });
+        response.success(ctx, result);
     }, (err) => {
         response.sqlError(ctx, err);
     })

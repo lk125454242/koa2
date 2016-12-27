@@ -15,7 +15,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         picture: {
             type: DataTypes.STRING(2048),
-            defaultValue: '',
+            defaultValue: 'default/head.jpg',
             comment: '图片'
         },
         describe: {

@@ -11,8 +11,8 @@ router.post('/', async function (ctx, next) {
         name = body.name,
         picture = body.picture,
         describe = body.describe;
-    if (!name || !picture || !describe) {
-        return response.error(res, { message: '参数错误' });
+    if (!name || !describe) {
+        return response.error(ctx, { message: '参数错误' });
     }
     await models.Media.create({
         name: name,
